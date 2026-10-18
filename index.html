@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<script type="importmap">{"imports":{"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js":"./mock/firebase-app.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js":"./mock/firebase-auth.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js":"./mock/firebase-firestore.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js":"./mock/firebase-storage.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js":"./mock/firebase-functions.js"}}</script>
+<script type="module" src="mock/demo-bar.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Demo] Filo & Navaja · Barbería de autor</title>
+<meta name="description" content="Reserve su turno en segundos, descubra el corte que mejor le favorece con nuestro asesor de estilo y compre productos profesionales.">
+<meta property="og:title" content="Filo & Navaja · Barbería de autor">
+<meta property="og:description" content="Su mejor versión empieza en nuestra silla. Reserve en línea.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<main>
+  <section class="hero" id="hero">
+    <div class="wrap">
+      <span class="eyebrow">Barbería de autor</span>
+      <h1>Usted merece salir<br>sintiéndose imparable.</h1>
+      <p class="lead">Un buen corte no cambia quién es usted: revela lo mejor que ya tiene. Por eso escuchamos primero, cortamos después y cuidamos cada detalle como si fuera para nosotros.</p>
+      <div class="btn-row">
+        <a href="reservar.html" class="btn btn-primary">Reservar mi turno en 60 segundos</a>
+        <a href="asesor.html" class="btn btn-ghost">Descubrir qué corte me favorece</a>
+      </div>
+      <div class="hero-proof">
+        <div><b>2 min</b>para reservar, sin llamadas</div>
+        <div><b>Recordatorio</b>a la hora que usted elija</div>
+        <div><b>IA</b>que analiza su rostro y le sugiere el corte</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow">Por qué nos eligen</span>
+      <h2 style="max-width:720px">Su tiempo vale. Su imagen, también. Nosotros cuidamos ambos.</h2>
+      <div class="grid grid-3" style="margin-top:34px">
+        <div class="card reveal"><h3>Le escuchamos primero</h3><p class="muted">Antes de tomar la máquina, conversamos sobre su rutina, su trabajo y cómo quiere verse. El corte se adapta a su vida, no al revés.</p></div>
+        <div class="card reveal"><h3>Puntualidad real</h3><p class="muted">Su turno es suyo. Le avisamos por correo 1, 2, 3 o 24 horas antes, como usted prefiera, y le atendemos a la hora acordada.</p></div>
+        <div class="card reveal"><h3>Detalle de autor</h3><p class="muted">Toalla caliente, navaja, acabado a tijera. Los pequeños gestos que hacen que la gente le pregunte dónde se corta el cabello.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--ink-2)">
+    <div class="wrap">
+      <div style="display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap">
+        <div><span class="eyebrow">Servicios</span><h2>Elija su experiencia</h2></div>
+        <a href="reservar.html" class="btn btn-ghost">Ver horarios disponibles</a>
+      </div>
+      <div class="grid grid-3" id="services" style="margin-top:30px"><div class="empty">Cargando servicios…</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow">Así de simple</span>
+      <h2>Tres pasos y su silla le espera</h2>
+      <div class="grid grid-3 steps-how" style="margin-top:30px">
+        <div class="card reveal"><h3>Elija servicio y barbero</h3><p class="muted">Vea precios y duración claros, sin sorpresas.</p></div>
+        <div class="card reveal"><h3>Escoja día y hora</h3><p class="muted">Solo le mostramos horarios realmente libres.</p></div>
+        <div class="card reveal"><h3>Reciba su recordatorio</h3><p class="muted">Usted decide cuándo avisarle. Nosotros no lo olvidamos.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="cta-band reveal">
+        <div>
+          <span class="eyebrow" style="color:#f4d9d4">Asesor de estilo con inteligencia artificial</span>
+          <h2>¿Y si su próximo corte lo eligiera con información, no con suerte?</h2>
+          <p>Cargue una foto de frente. Nuestro asesor analiza la forma de su rostro y le propone los 3 cortes que mejor le favorecen, con las indicaciones técnicas para su barbero. Su foto no se guarda.</p>
+        </div>
+        <a href="asesor.html" class="btn btn-primary">Analizar mi rostro gratis</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--ink-2)">
+    <div class="wrap">
+      <div style="display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap">
+        <div><span class="eyebrow">Trabajos recientes</span><h2>Cada corte cuenta una historia</h2></div>
+        <a href="galeria.html" class="btn btn-ghost">Ver toda la galería</a>
+      </div>
+      <div class="masonry" id="galleryPreview" style="margin-top:30px"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow">El equipo</span>
+      <h2>Manos que conocen su oficio</h2>
+      <div class="grid grid-4" id="barbers" style="margin-top:30px"></div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--ink-2)">
+    <div class="wrap">
+      <div style="display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap">
+        <div><span class="eyebrow">Tienda</span><h2>Lleve el acabado de barbería a su casa</h2>
+          <p class="muted">Los mismos productos que usamos en la silla. Pague en línea o al recibir.</p></div>
+        <a href="tienda.html" class="btn btn-ghost">Ir a la tienda</a>
+      </div>
+      <div class="grid grid-4" id="products" style="margin-top:30px"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap center">
+      <h2 style="max-width:760px;margin-inline:auto">La próxima vez que se mire al espejo, va a sonreír.</h2>
+      <p class="muted" style="max-width:560px;margin:0 auto 26px">Hay un espacio en nuestra agenda con su nombre. Tome el suyo antes de que alguien más lo haga.</p>
+      <a href="reservar.html" class="btn btn-primary">Sí, quiero reservar mi turno</a>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="js/home.js"></script>
+</body>
+</html>

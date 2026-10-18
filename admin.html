@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<script type="importmap">{"imports":{"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js":"./mock/firebase-app.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js":"./mock/firebase-auth.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js":"./mock/firebase-firestore.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js":"./mock/firebase-storage.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js":"./mock/firebase-functions.js"}}</script>
+<script type="module" src="mock/demo-bar.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Demo] Panel · Filo & Navaja</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="section" style="padding-top:40px">
+  <div class="wrap">
+    <div id="gate" class="card hidden" style="max-width:520px">
+      <h2>Acceso restringido</h2>
+      <p class="muted">Este panel es solo para el equipo de la barbería. Si usted es el propietario y es su primer ingreso, active su rol aquí.</p>
+      <button class="btn btn-primary" id="claimBtn">Soy el propietario: activar rol</button>
+    </div>
+
+    <div id="panel" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:12px">
+        <div><span class="eyebrow">Panel de administración</span><h1 style="font-size:2.2rem;margin:0">Su barbería, en orden</h1></div>
+        <button class="btn btn-ghost btn-small" id="seedBtn">Cargar datos de ejemplo</button>
+      </div>
+      <div class="tabs" id="tabs" style="margin-top:24px">
+        <button data-tab="agenda" class="on">Agenda</button>
+        <button data-tab="pedidos">Pedidos</button>
+        <button data-tab="services">Servicios</button>
+        <button data-tab="barbers">Barberos</button>
+        <button data-tab="products">Productos</button>
+        <button data-tab="galeria">Galería</button>
+        <button data-tab="ajustes">Ajustes</button>
+        <button data-tab="equipo">Equipo</button>
+      </div>
+
+      <section data-pane="agenda">
+        <div class="btn-row" style="align-items:end;margin-bottom:18px">
+          <div><label for="agDate">Día</label><input type="date" id="agDate"></div>
+          <select id="agBarber" style="width:auto"><option value="">Todos los barberos</option></select>
+        </div>
+        <div id="agenda"></div>
+      </section>
+
+      <section data-pane="pedidos" class="hidden">
+        <select id="ordFilter" style="width:auto;margin-bottom:16px">
+          <option value="">Todos</option><option value="pendiente_entrega">Contraentrega por despachar</option><option value="pagado">Pagados por despachar</option>
+          <option value="enviado">Enviados</option><option value="pendiente_pago">Esperando pago</option><option value="revision_manual">Revisión manual</option>
+        </select>
+        <div id="orders"></div>
+      </section>
+
+      <section data-pane="services" class="hidden"><div data-crud="services"></div></section>
+      <section data-pane="barbers" class="hidden"><div data-crud="barbers"></div></section>
+      <section data-pane="products" class="hidden"><div data-crud="products"></div></section>
+
+      <section data-pane="galeria" class="hidden">
+        <form id="upForm" class="card" style="margin-bottom:22px">
+          <h3>Publicar trabajos</h3>
+          <div class="form-row">
+            <div class="field"><label for="upFiles">Fotos o videos</label><input type="file" id="upFiles" accept="image/*,video/mp4,video/webm,video/quicktime" multiple required></div>
+            <div class="field"><label for="upTitle">Título</label><input id="upTitle" maxlength="80" placeholder="Ej.: Mid fade con textura"></div>
+            <div class="field"><label for="upCat">Categoría</label><select id="upCat"><option>degradado</option><option>clásico</option><option>barba</option><option>diseño</option><option>largo</option><option>antes y después</option></select></div>
+            <div class="field"><label for="upBarber">Barbero</label><select id="upBarber"><option value="">—</option></select></div>
+          </div>
+          <div class="field"><label for="upDesc">Descripción (opcional)</label><input id="upDesc" maxlength="200"></div>
+          <button class="btn btn-primary" id="upBtn">Subir y publicar</button>
+          <p class="muted" id="upProgress" style="margin:12px 0 0"></p>
+          <p class="muted" style="font-size:.82rem;margin:8px 0 0">Publique solo fotos de clientes que lo hayan autorizado.</p>
+        </form>
+        <div class="grid grid-4" id="galleryAdmin"></div>
+      </section>
+
+      <section data-pane="ajustes" class="hidden"><form id="settings" class="card"></form></section>
+
+      <section data-pane="equipo" class="hidden">
+        <form id="teamForm" class="card" style="max-width:560px">
+          <h3>Dar acceso al panel</h3>
+          <p class="muted">La persona debe haber iniciado sesión en el sitio al menos una vez.</p>
+          <div class="field"><label for="teamEmail">Correo</label><input type="email" id="teamEmail" required></div>
+          <div class="btn-row"><button class="btn btn-primary" data-admin="1">Dar acceso</button><button class="btn btn-danger" data-admin="0">Retirar acceso</button></div>
+        </form>
+      </section>
+    </div>
+  </div>
+</main>
+
+<div class="modal" id="editModal"><div class="card" style="width:min(620px,100%);max-height:90vh;overflow:auto">
+  <button class="x" data-close>×</button>
+  <h3 id="editTitle">Editar</h3>
+  <form id="editForm"></form>
+</div></div>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>

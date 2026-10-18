@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<script type="importmap">{"imports":{"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js":"./mock/firebase-app.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js":"./mock/firebase-auth.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js":"./mock/firebase-firestore.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js":"./mock/firebase-storage.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js":"./mock/firebase-functions.js"}}</script>
+<script type="module" src="mock/demo-bar.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Demo] Mi cuenta · Filo & Navaja</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="section">
+  <div class="wrap">
+    <span class="eyebrow">Mi cuenta</span>
+    <h1 style="font-size:clamp(2rem,4.5vw,3rem)" id="hello">Bienvenido</h1>
+    <div class="tabs" id="tabs">
+      <button data-tab="citas" class="on">Mis citas</button>
+      <button data-tab="pedidos">Mis pedidos</button>
+      <button data-tab="estilo">Mis análisis de estilo</button>
+    </div>
+    <section data-pane="citas"><div id="bookings"></div><a href="reservar.html" class="btn btn-primary" style="margin-top:20px">Reservar otro turno</a></section>
+    <section data-pane="pedidos" class="hidden"><div id="orders"></div></section>
+    <section data-pane="estilo" class="hidden"><div id="consults"></div></section>
+  </div>
+</main>
+
+<script type="module">
+import { collection, getDocs, query, where, orderBy, limit, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import { db, call } from './js/firebase.js';
+import { renderChrome, esc, money, $, $$, toast, requireLogin, firstName, formatDateLong } from './js/ui.js';
+
+renderChrome('cuenta.html');
+const STATUS = { confirmada: ['ok', 'Confirmada'], cancelada: ['bad', 'Cancelada'], completada: ['', 'Completada'], no_asistio: ['warn', 'No asistió'] };
+const OSTATUS = { pendiente_pago: 'warn', pagado: 'ok', pendiente_entrega: 'ok', enviado: 'ok', entregado: '', cancelado: 'bad', pago_rechazado: 'bad' };
+
+$('#tabs').onclick = (e) => {
+  const t = e.target.dataset.tab; if (!t) return;
+  $$('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === t));
+  $$('[data-pane]').forEach((p) => p.classList.toggle('hidden', p.dataset.pane !== t));
+};
+
+async function loadBookings(uid) {
+  const snap = await getDocs(query(collection(db, 'bookings'), where('uid', '==', uid), orderBy('startAt', 'desc'), limit(30)));
+  const now = Date.now();
+  $('#bookings').innerHTML = snap.empty
+    ? '<div class="empty">Aún no tiene citas. Su primera experiencia está a un par de clics.</div>'
+    : `<div class="grid grid-2">${snap.docs.map((d) => {
+      const b = d.data();
+      const [cls, label] = STATUS[b.status] || ['', b.status];
+      const upcoming = b.status === 'confirmada' && b.startAt.toMillis() > now;
+      return `<article class="card"><span class="tag ${cls}">${label}</span>
+        <h3 style="margin-top:12px">${esc(b.serviceName)}</h3>
+        <p class="muted" style="margin:0">${esc(formatDateLong(b.startAt.toDate()))}<br>Con ${esc(b.barberName)} · ${money(b.price)}<br>Recordatorio: ${b.reminderHours === 24 ? '1 día' : b.reminderHours + ' h'} antes</p>
+        ${upcoming ? `<div class="btn-row" style="margin-top:16px"><a class="btn btn-ghost btn-small" href="reservar.html?reprogramar=${d.id}">Reprogramar</a><button class="btn btn-danger btn-small" data-cancel="${d.id}">Cancelar</button></div>` : ''}
+        ${b.status === 'completada' ? `<a class="btn btn-primary btn-small" style="margin-top:16px" href="reservar.html?servicio=${b.serviceId}&barbero=${b.barberId}">Repetir este servicio</a>` : ''}
+      </article>`;
+    }).join('')}</div>`;
+}
+
+$('#bookings').onclick = async (e) => {
+  const id = e.target.dataset.cancel; if (!id) return;
+  if (!confirm('¿Seguro que desea cancelar? Liberaremos su espacio para otro cliente.')) return;
+  e.target.disabled = true;
+  try { await call('cancelBooking', { bookingId: id }); toast('Cita cancelada. Gracias por avisarnos a tiempo.'); loadBookings(window.__uid); }
+  catch (err) { toast(err.message, true); e.target.disabled = false; }
+};
+
+async function loadOrders(uid) {
+  const snap = await getDocs(query(collection(db, 'orders'), where('uid', '==', uid), orderBy('createdAt', 'desc'), limit(30)));
+  $('#orders').innerHTML = snap.empty
+    ? '<div class="empty">Aún no tiene pedidos. <a href="tienda.html">Vea los favoritos de nuestros clientes</a>.</div>'
+    : `<div class="table-wrap"><table class="data"><thead><tr><th>Pedido</th><th>Productos</th><th>Total</th><th>Estado</th><th></th></tr></thead><tbody>${snap.docs.map((d) => {
+      const o = d.data();
+      return `<tr><td>#${esc(o.code)}</td><td>${o.items.map((i) => `${esc(i.name)} ×${i.qty}`).join('<br>')}</td><td>${money(o.total)}</td>
+        <td><span class="tag ${OSTATUS[o.status] || ''}">${esc(o.status.replace(/_/g, ' '))}</span></td><td><a href="pedido.html?id=${d.id}">Ver</a></td></tr>`;
+    }).join('')}</tbody></table></div>`;
+}
+
+async function loadConsults(uid) {
+  const snap = await getDocs(query(collection(db, `users/${uid}/aiConsults`), orderBy('createdAt', 'desc'), limit(10)));
+  $('#consults').innerHTML = snap.empty
+    ? '<div class="empty">Todavía no ha probado el asesor. <a href="asesor.html">Descubra qué corte le favorece</a>.</div>'
+    : `<div class="grid grid-2">${snap.docs.map((d) => {
+      const r = d.data().result;
+      return `<article class="card"><span class="tag">${d.data().createdAt ? esc(d.data().createdAt.toDate().toLocaleDateString('es-CO')) : ''}</span>
+        <h3 style="margin-top:12px">Rostro ${esc(r.faceShape)}</h3>
+        <ol style="padding-left:18px">${r.recommendations.map((c) => `<li><b>${esc(c.name)}</b><br><small class="muted">${esc(c.barberNotes)}</small></li>`).join('')}</ol>
+        <div class="btn-row"><a class="btn btn-primary btn-small" href="reservar.html?nota=${encodeURIComponent(`Recomendación del asesor: ${r.recommendations[0]?.name}. ${r.recommendations[0]?.barberNotes}`.slice(0, 480))}">Reservar mi corte ideal</a>
+        <button class="btn btn-danger btn-small" data-del="${d.id}">Eliminar</button></div></article>`;
+    }).join('')}</div>`;
+}
+
+$('#consults').onclick = async (e) => {
+  const id = e.target.dataset.del; if (!id) return;
+  if (!confirm('¿Eliminar este análisis?')) return;
+  await deleteDoc(doc(db, `users/${window.__uid}/aiConsults/${id}`));
+  toast('Análisis eliminado.'); loadConsults(window.__uid);
+};
+
+(async () => {
+  const user = await requireLogin('Ingrese para ver sus citas, pedidos y análisis de estilo.');
+  window.__uid = user.uid;
+  $('#hello').textContent = `Hola${firstName(user) ? ', ' + firstName(user) : ''}. Qué bueno verle de nuevo`;
+  await Promise.allSettled([loadBookings(user.uid), loadOrders(user.uid), loadConsults(user.uid)]);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pasarela simulada · Demo</title>
+<style>
+  body{margin:0;background:#eef1f5;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#1f2933}
+  .top{background:#009ee3;color:#fff;padding:16px;text-align:center;font-weight:700}
+  .card{background:#fff;max-width:440px;margin:24px auto;border-radius:14px;padding:22px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+  .note{background:#fff7e0;border:1px dashed #d8a200;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-size:14px}td{padding:6px 0}td:last-child{text-align:right}
+  .total td{border-top:1px solid #e3e7ec;font-weight:700;padding-top:10px}
+  button{width:100%;padding:14px;border-radius:10px;border:0;font:700 15px system-ui;cursor:pointer;margin-top:10px}
+  .ok{background:#009ee3;color:#fff}.ko{background:#fff;border:1px solid #d64545;color:#d64545}.pend{background:#fff;border:1px solid #9aa5b1;color:#52606d}
+  @media(max-width:480px){.card{margin:12px;padding:18px}}
+</style>
+</head>
+<body>
+<div class="top">Pasarela de pago · simulación</div>
+<div class="card">
+  <div class="note">Esto es una <b>simulación</b> del Checkout Pro de Mercado Pago. En producción el cliente paga con tarjeta, PSE o Nequi, y el resultado llega a su sistema por webhook verificado.</div>
+  <div id="sum">Cargando…</div>
+  <button class="ok" data-s="approved">Aprobar pago</button>
+  <button class="ko" data-s="rejected">Rechazar pago</button>
+  <button class="pend" data-s="pending">Dejar pendiente</button>
+</div>
+<script type="module">
+import { db } from './mock/store.js';
+import { decode } from './mock/store.js';
+import { httpsCallable } from './mock/firebase-functions.js';
+const id = new URLSearchParams(location.search).get('id');
+const raw = db().cols.orders?.[id];
+const money = (n) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
+if (raw) {
+  const o = decode(raw);
+  document.getElementById('sum').innerHTML = `<p style="margin-top:0">Pedido <b>#${o.code}</b></p><table>${o.items.map((i) => `<tr><td>${i.name} × ${i.qty}</td><td>${money(i.price * i.qty)}</td></tr>`).join('')}
+    <tr><td>Envío</td><td>${o.shippingFee ? money(o.shippingFee) : 'Gratis'}</td></tr><tr class="total"><td>Total</td><td>${money(o.total)}</td></tr></table>`;
+} else document.getElementById('sum').textContent = 'Pedido no encontrado.';
+document.querySelectorAll('button').forEach((b) => b.onclick = async () => {
+  if (b.dataset.s !== 'pending') await httpsCallable(null, '__mpSimulate')({ orderId: id, status: b.dataset.s });
+  location.href = `pedido.html?id=${id}`;
+});
+</script>
+</body>
+</html>

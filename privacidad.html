@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<script type="importmap">{"imports":{"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js":"./mock/firebase-app.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js":"./mock/firebase-auth.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js":"./mock/firebase-firestore.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js":"./mock/firebase-storage.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js":"./mock/firebase-functions.js"}}</script>
+<script type="module" src="mock/demo-bar.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Demo] Política de privacidad · Filo & Navaja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="section">
+  <div class="wrap" style="max-width:780px">
+    <span class="eyebrow">Tratamiento de datos personales</span>
+    <h1 style="font-size:2.4rem">Política de privacidad</h1>
+    <p class="muted">Plantilla base alineada con la Ley 1581 de 2012 y el Decreto 1377 de 2013 (Colombia). Revísela con un asesor jurídico y complete los datos del responsable antes de publicar.</p>
+
+    <h3>1. Responsable</h3>
+    <p>[Razón social], NIT [número], domicilio [dirección], correo [correo de contacto].</p>
+
+    <h3>2. Datos que tratamos y finalidad</h3>
+    <ul>
+      <li><b>Cuenta y reservas:</b> nombre, correo, celular, servicios agendados. Para gestionar sus citas y enviarle confirmaciones y recordatorios.</li>
+      <li><b>Compras:</b> datos de entrega e historial de pedidos. Para despachar y facturar. Los datos de pago los procesa Mercado Pago; nunca almacenamos tarjetas.</li>
+      <li><b>Asesor de estilo:</b> la fotografía se envía cifrada a un proveedor de inteligencia artificial solo para generar la recomendación y <b>no se almacena</b> en nuestros sistemas. Conservamos únicamente el resultado de texto en su cuenta, que usted puede eliminar cuando quiera.</li>
+    </ul>
+
+    <h3>3. Sus derechos</h3>
+    <p>Puede conocer, actualizar, rectificar y suprimir sus datos, revocar la autorización y presentar quejas ante la Superintendencia de Industria y Comercio. Escríbanos a [correo] y responderemos dentro de los plazos legales.</p>
+
+    <h3>4. Galería</h3>
+    <p>Solo publicamos fotos o videos de clientes que lo autorizan expresamente. Si aparece en una publicación y desea retirarla, escríbanos y la eliminamos de inmediato.</p>
+
+    <h3>5. Encargados</h3>
+    <p>Google Firebase (alojamiento y base de datos), Mercado Pago (pagos), Anthropic (análisis de imagen del asesor de estilo) y el proveedor de correo configurado.</p>
+
+    <p class="muted">Última actualización: [fecha].</p>
+  </div>
+</main>
+<script type="module">import { renderChrome } from './js/ui.js'; renderChrome('');</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<script type="importmap">{"imports":{"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js":"./mock/firebase-app.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js":"./mock/firebase-auth.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js":"./mock/firebase-firestore.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js":"./mock/firebase-storage.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js":"./mock/firebase-functions.js"}}</script>
+<script type="module" src="mock/demo-bar.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Demo] Asesor de estilo con IA · Filo & Navaja</title>
+<meta name="description" content="Cargue una foto de frente y descubra los 3 cortes que mejor favorecen su rostro. Su foto no se guarda.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="section">
+  <div class="wrap">
+    <span class="eyebrow">Asesor de estilo con inteligencia artificial</span>
+    <h1 style="font-size:clamp(2rem,4.5vw,3.2rem)">Descubra el corte que fue hecho para su rostro</h1>
+    <p class="muted" style="max-width:680px">Cada rostro tiene rasgos que vale la pena resaltar. Nuestro asesor los identifica a partir de una foto suya y le propone los tres cortes que mejor le favorecen, con las indicaciones técnicas para que su barbero los ejecute a la perfección.</p>
+
+    <div class="advisor" style="margin-top:32px">
+      <div>
+        <div class="dropzone" id="drop" tabindex="0" role="button" aria-label="Cargar foto">
+          <div id="dropText"><div style="font-size:2.6rem">📷</div><b>Toque para tomar o cargar una foto</b><p class="muted" style="margin:8px 0 0;font-size:.9rem">De frente, con buena luz, sin gorra ni gafas y con el cabello despejado de la frente.</p></div>
+          <video id="cam" class="hidden" playsinline muted></video>
+          <img id="preview" class="hidden" alt="Vista previa de su foto">
+          <div class="face-guide hidden" id="guide"></div>
+        </div>
+        <input type="file" id="file" accept="image/jpeg,image/png,image/webp" capture="user" class="hidden">
+        <div class="btn-row" style="margin-top:14px">
+          <button class="btn btn-ghost btn-small" id="camBtn">Usar la cámara</button>
+          <button class="btn btn-ghost btn-small hidden" id="shotBtn">Tomar foto</button>
+          <button class="btn btn-ghost btn-small" id="pickBtn">Elegir de la galería</button>
+        </div>
+      </div>
+
+      <div>
+        <form id="prefs" class="card">
+          <h3>Cuéntenos un poco de usted</h3>
+          <p class="muted" style="font-size:.92rem">Mientras más sepamos de su estilo de vida, mejor será la recomendación.</p>
+          <div class="form-row">
+            <div class="field"><label for="pLength">Largo que prefiere</label><select id="pLength"><option value="">Me da igual</option><option>corto</option><option>medio</option><option>largo</option></select></div>
+            <div class="field"><label for="pStyle">Estilo</label><select id="pStyle"><option value="">Sorpréndame</option><option>clásico y ejecutivo</option><option>moderno y urbano</option><option>natural y relajado</option><option>atrevido</option></select></div>
+            <div class="field"><label for="pMaint">Tiempo para peinarse</label><select id="pMaint"><option value="">Indiferente</option><option>menos de 2 minutos</option><option>unos 5 minutos</option><option>disfruto peinarme</option></select></div>
+            <div class="field"><label for="pBeard">Barba</label><select id="pBeard"><option value="">Recomiéndeme</option><option>quiero barba</option><option>prefiero sin barba</option></select></div>
+          </div>
+          <label class="check"><input type="checkbox" id="consent" required> <span>Autorizo el análisis de mi foto para recibir recomendaciones de corte. Entiendo que la foto <b>no se almacena</b> y se usa solo para este análisis. <a href="privacidad.html" target="_blank">Política de privacidad</a>.</span></label>
+          <button class="btn btn-primary" type="submit" id="goBtn" style="width:100%;margin-top:18px" disabled>Mostrarme mis cortes ideales</button>
+        </form>
+
+        <div id="result" style="margin-top:22px"></div>
+      </div>
+    </div>
+  </div>
+</main>
+<script type="module" src="js/advisor.js"></script>
+</body>
+</html>

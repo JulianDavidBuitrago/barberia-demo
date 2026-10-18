@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<script type="importmap">{"imports":{"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js":"./mock/firebase-app.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js":"./mock/firebase-auth.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js":"./mock/firebase-firestore.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js":"./mock/firebase-storage.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js":"./mock/firebase-functions.js"}}</script>
+<script type="module" src="mock/demo-bar.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Demo] Su pedido · Filo & Navaja</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="section">
+  <div class="wrap" style="max-width:720px">
+    <div class="card" id="orderCard"><div class="loader"></div><p class="center muted">Consultando su pedido…</p></div>
+  </div>
+</main>
+<script type="module">
+import { doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import { db } from './js/firebase.js';
+import { renderChrome, esc, money, $, requireLogin, waLink } from './js/ui.js';
+
+renderChrome('');
+const id = new URLSearchParams(location.search).get('id');
+
+const STATUS = {
+  pendiente_pago:    { tag: 'warn', title: 'Estamos esperando la confirmación del pago', text: 'Si ya pagó, en unos segundos se actualizará esta página. Si eligió PSE o efectivo, puede tardar un poco más.' },
+  pagado:            { tag: 'ok',   title: '¡Pago aprobado! Su pedido está en preparación', text: 'Le enviamos la confirmación a su correo. Gracias por confiar en nosotros.' },
+  pendiente_entrega: { tag: 'ok',   title: 'Pedido confirmado: pagará al recibir', text: 'Ya lo estamos preparando. Tenga a mano el valor exacto para agilizar la entrega.' },
+  enviado:           { tag: 'ok',   title: 'Su pedido va en camino', text: 'Muy pronto lo tendrá en sus manos.' },
+  entregado:         { tag: 'ok',   title: 'Pedido entregado', text: 'Esperamos que lo disfrute. ¿Qué tal si lo estrena en su próximo corte?' },
+  pago_rechazado:    { tag: 'bad',  title: 'El pago no fue aprobado', text: 'No se preocupe: no se le cobró. Puede intentarlo con otro medio de pago o elegir pago contra entrega.' },
+  cancelado:         { tag: 'bad',  title: 'Pedido cancelado', text: 'Si fue un error, escríbanos y lo resolvemos de inmediato.' },
+  revision_manual:   { tag: 'warn', title: 'Estamos verificando su pago', text: 'Un miembro del equipo lo revisará y le contactará muy pronto.' },
+  reembolsado:       { tag: 'warn', title: 'Pago reembolsado', text: 'El reembolso fue procesado por Mercado Pago.' }
+};
+
+async function init() {
+  if (!id) { $('#orderCard').innerHTML = '<p>No encontramos el pedido.</p><a class="btn btn-primary" href="tienda.html">Volver a la tienda</a>'; return; }
+  await requireLogin('Ingrese para ver el estado de su pedido.');
+  onSnapshot(doc(db, 'orders', id), (snap) => {
+    if (!snap.exists()) { $('#orderCard').innerHTML = '<p>No encontramos el pedido.</p>'; return; }
+    const o = snap.data();
+    const s = STATUS[o.status] || { tag: '', title: o.status, text: '' };
+    $('#orderCard').innerHTML = `
+      <span class="tag ${s.tag}">Pedido #${esc(o.code)}</span>
+      <h2 style="margin-top:14px">${s.title}</h2>
+      <p class="muted">${s.text}</p>
+      <table class="data">${o.items.map((i) => `<tr><td>${esc(i.name)} × ${i.qty}</td><td style="text-align:right">${money(i.price * i.qty)}</td></tr>`).join('')}
+        <tr><td class="muted">Envío</td><td style="text-align:right">${o.shippingFee ? money(o.shippingFee) : 'Gratis'}</td></tr>
+        <tr><td><b>Total</b></td><td style="text-align:right"><b>${money(o.total)}</b></td></tr></table>
+      <p class="muted" style="margin-top:16px">Entrega: ${esc(o.shipping.address)}, ${esc(o.shipping.city)}</p>
+      <div class="btn-row" style="margin-top:20px">
+        ${o.status === 'pago_rechazado' ? '<a class="btn btn-primary" href="tienda.html#carrito">Intentar de nuevo</a>' : '<a class="btn btn-primary" href="reservar.html">Reservar mi próximo corte</a>'}
+        <a class="btn btn-ghost" target="_blank" rel="noopener" href="${waLink(`Hola, tengo una pregunta sobre mi pedido #${o.code}`)}">Hablar con nosotros</a>
+      </div>`;
+  }, () => { $('#orderCard').innerHTML = '<p>No tiene acceso a este pedido con la cuenta actual.</p>'; });
+}
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<script type="importmap">{"imports":{"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js":"./mock/firebase-app.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js":"./mock/firebase-auth.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js":"./mock/firebase-firestore.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js":"./mock/firebase-storage.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js":"./mock/firebase-functions.js"}}</script>
+<script type="module" src="mock/demo-bar.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Demo] Tienda · Filo & Navaja</title>
+<meta name="description" content="Productos profesionales para cabello, barba y afeitado. Pague con Mercado Pago o contra entrega.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="section">
+  <div class="wrap">
+    <span class="eyebrow">Tienda</span>
+    <h1 style="font-size:clamp(2rem,4.5vw,3.2rem)">El acabado de barbería, todos los días</h1>
+    <p class="muted" style="max-width:640px">Usted ya sabe cómo se siente salir de la silla. Estos son los mismos productos que usamos con usted, para que ese efecto le dure hasta su próxima visita.</p>
+    <div class="filters" id="filters" style="margin-top:24px"></div>
+    <div class="grid grid-4" id="grid"><div class="empty">Cargando productos…</div></div>
+  </div>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Carrito">
+  <header style="display:flex;justify-content:space-between;align-items:center">
+    <h3 style="margin:0" id="drawerTitle">Su carrito</h3>
+    <button class="btn btn-ghost btn-small" id="closeDrawer">Cerrar</button>
+  </header>
+  <div class="body">
+    <div id="cartView"></div>
+    <form id="checkout" class="hidden">
+      <h3>¿A dónde se lo llevamos?</h3>
+      <div class="field"><label for="shName">Nombre de quien recibe</label><input id="shName" required maxlength="80" autocomplete="name"></div>
+      <div class="field"><label for="shPhone">Celular</label><input id="shPhone" type="tel" required maxlength="20" autocomplete="tel"></div>
+      <div class="field"><label for="shAddress">Dirección</label><input id="shAddress" required maxlength="160" autocomplete="street-address" placeholder="Calle, número, apto, barrio"></div>
+      <div class="field"><label for="shCity">Ciudad</label><input id="shCity" required maxlength="60" autocomplete="address-level2"></div>
+      <div class="field"><label for="shNotes">Indicaciones (opcional)</label><input id="shNotes" maxlength="300" placeholder="Ej.: portería, entregar después de las 5 p. m."></div>
+      <h3 style="margin-top:22px">¿Cómo prefiere pagar?</h3>
+      <label class="pay-option" id="payMp"><input type="radio" name="pay" value="mercadopago" checked><span><b>Pago en línea con Mercado Pago</b><br><small class="muted">Tarjeta, PSE, Nequi y más. Seguro y al instante.</small></span></label>
+      <label class="pay-option" id="payCod"><input type="radio" name="pay" value="contraentrega"><span><b>Pago contra entrega</b><br><small class="muted">Paga en efectivo cuando reciba su pedido.</small></span></label>
+    </form>
+  </div>
+  <footer>
+    <div style="display:flex;justify-content:space-between"><span class="muted">Subtotal</span><b id="subtotal">$0</b></div>
+    <div style="display:flex;justify-content:space-between"><span class="muted">Envío</span><span id="shipping">—</span></div>
+    <p class="muted" style="font-size:.82rem;margin:6px 0 14px" id="shipHint"></p>
+    <button class="btn btn-primary" style="width:100%" id="nextBtn">Continuar con mi compra</button>
+  </footer>
+</aside>
+
+<script type="module" src="js/shop.js"></script>
+</body>
+</html>

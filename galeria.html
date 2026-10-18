@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<script type="importmap">{"imports":{"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js":"./mock/firebase-app.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js":"./mock/firebase-auth.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js":"./mock/firebase-firestore.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js":"./mock/firebase-storage.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js":"./mock/firebase-functions.js"}}</script>
+<script type="module" src="mock/demo-bar.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Demo] Galería de cortes · Filo & Navaja</title>
+<meta name="description" content="Fotos y videos de cortes, degradados y barbas realizados en nuestra barbería.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="section">
+  <div class="wrap">
+    <span class="eyebrow">Galería</span>
+    <h1 style="font-size:clamp(2rem,4.5vw,3.2rem)">Clientes que salieron sintiéndose imparables</h1>
+    <p class="muted" style="max-width:640px">¿Ve un corte que le encanta? Tóquelo y reserve: su barbero sabrá exactamente qué quiere.</p>
+    <div class="filters" id="filters" style="margin-top:24px"></div>
+    <div class="masonry" id="grid"></div>
+    <div class="center" style="margin-top:24px"><button class="btn btn-ghost hidden" id="more">Ver más trabajos</button></div>
+  </div>
+</main>
+
+<div class="lightbox" id="lb" role="dialog" aria-modal="true">
+  <button class="close" aria-label="Cerrar">×</button>
+  <div style="display:grid;gap:14px;justify-items:center">
+    <div id="lbMedia"></div>
+    <p id="lbCaption" style="margin:0"></p>
+    <a class="btn btn-primary" id="lbCta" href="reservar.html">Quiero este corte</a>
+  </div>
+</div>
+
+<script type="module">
+import { collection, getDocs, query, where, orderBy, limit, startAfter } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import { db } from './js/firebase.js';
+import { renderChrome, esc, $ } from './js/ui.js';
+
+renderChrome('galeria.html');
+const PAGE = 24;
+let items = [], last = null, filter = 'todos';
+const CATS = ['todos', 'degradado', 'clásico', 'barba', 'diseño', 'largo', 'antes y después'];
+
+$('#filters').innerHTML = CATS.map((c) => `<button data-cat="${c}" class="${c === filter ? 'on' : ''}">${c[0].toUpperCase() + c.slice(1)}</button>`).join('');
+$('#filters').onclick = (e) => {
+  if (!e.target.dataset.cat) return;
+  filter = e.target.dataset.cat;
+  [...$('#filters').children].forEach((b) => b.classList.toggle('on', b.dataset.cat === filter));
+  render();
+};
+
+async function loadPage() {
+  const q = last
+    ? query(collection(db, 'gallery'), where('published', '==', true), orderBy('createdAt', 'desc'), startAfter(last), limit(PAGE))
+    : query(collection(db, 'gallery'), where('published', '==', true), orderBy('createdAt', 'desc'), limit(PAGE));
+  const snap = await getDocs(q);
+  last = snap.docs[snap.docs.length - 1] || last;
+  items.push(...snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  $('#more').classList.toggle('hidden', snap.size < PAGE);
+  render();
+}
+
+function render() {
+  const list = items.filter((g) => filter === 'todos' || g.category === filter);
+  $('#grid').innerHTML = list.map((g) => `<figure data-id="${g.id}" class="reveal">
+    ${g.type === 'video'
+      ? `<video src="${esc(g.url)}" muted playsinline preload="metadata" ${g.posterUrl ? `poster="${esc(g.posterUrl)}"` : ''}></video><span class="play-badge">▶ Video</span>`
+      : `<img src="${esc(g.url)}" alt="${esc(g.title || 'Corte')}" loading="lazy">`}
+    ${g.title ? `<figcaption>${esc(g.title)}${g.barberName ? ` · por ${esc(g.barberName)}` : ''}</figcaption>` : ''}</figure>`).join('')
+    || '<div class="empty">Pronto publicaremos trabajos en esta categoría.</div>';
+}
+
+$('#grid').onclick = (e) => {
+  const fig = e.target.closest('figure'); if (!fig) return;
+  const g = items.find((x) => x.id === fig.dataset.id);
+  $('#lbMedia').innerHTML = g.type === 'video'
+    ? `<video src="${esc(g.url)}" controls autoplay playsinline></video>`
+    : `<img src="${esc(g.url)}" alt="${esc(g.title || 'Corte')}">`;
+  $('#lbCaption').textContent = [g.title, g.description].filter(Boolean).join(' — ');
+  const p = new URLSearchParams({ nota: `Me gustó este corte de la galería: ${g.title || g.id}` });
+  if (g.serviceId) p.set('servicio', g.serviceId);
+  if (g.barberId) p.set('barbero', g.barberId);
+  $('#lbCta').href = `reservar.html?${p}`;
+  $('#lb').classList.add('open');
+};
+$('#lb').onclick = (e) => { if (e.target.id === 'lb' || e.target.classList.contains('close')) { $('#lb').classList.remove('open'); $('#lbMedia').innerHTML = ''; } };
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('#lb').click(); });
+$('#more').onclick = loadPage;
+
+loadPage().catch((e) => { console.error(e); $('#grid').innerHTML = '<div class="empty">No pudimos cargar la galería.</div>'; });
+</script>
+</body>
+</html>

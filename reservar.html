@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<script type="importmap">{"imports":{"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js":"./mock/firebase-app.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js":"./mock/firebase-auth.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js":"./mock/firebase-firestore.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js":"./mock/firebase-storage.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js":"./mock/firebase-functions.js"}}</script>
+<script type="module" src="mock/demo-bar.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Demo] Reservar turno · Filo & Navaja</title>
+<meta name="description" content="Elija servicio, barbero, día y hora. Reciba su recordatorio por correo cuando usted prefiera.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main class="section">
+  <div class="wrap">
+    <span class="eyebrow" id="modeEyebrow">Reserva en línea</span>
+    <h1 style="font-size:clamp(2rem,4.5vw,3.2rem)" id="title">Su turno, a su manera</h1>
+    <p class="muted" style="max-width:620px">Usted elige; nosotros nos encargamos del resto. Solo le mostramos horarios realmente disponibles, así que lo que vea es suyo.</p>
+
+    <div class="stepper" id="stepper" style="margin-top:28px">
+      <span data-step="1">1 · Servicio</span><span data-step="2">2 · Barbero</span><span data-step="3">3 · Día y hora</span><span data-step="4">4 · Confirmar</span>
+    </div>
+
+    <div class="booking-layout">
+      <div>
+        <section data-panel="1"><h3>¿Qué le gustaría hacerse hoy?</h3><div class="choice-grid" id="serviceList"></div></section>
+
+        <section data-panel="2" class="hidden"><h3>¿Con quién se siente más cómodo?</h3><div class="choice-grid" id="barberList"></div>
+          <button class="btn btn-ghost btn-small" data-back style="margin-top:18px">← Cambiar servicio</button></section>
+
+        <section data-panel="3" class="hidden">
+          <h3>Elija el día</h3>
+          <div class="days" id="days"></div>
+          <h3 style="margin-top:26px">Horarios disponibles</h3>
+          <div id="slotsMsg" class="muted">Seleccione un día para ver los horarios.</div>
+          <div class="slots" id="slots"></div>
+          <button class="btn btn-ghost btn-small" data-back style="margin-top:18px">← Cambiar barbero</button>
+        </section>
+
+        <section data-panel="4" class="hidden">
+          <h3>Ya casi. Solo unos datos para atenderle mejor</h3>
+          <form id="confirmForm">
+            <div class="form-row">
+              <div class="field"><label for="cName">¿Cómo le gusta que lo llamemos?</label><input id="cName" maxlength="80" required></div>
+              <div class="field"><label for="cPhone">Celular (WhatsApp)</label><input id="cPhone" type="tel" maxlength="20" inputmode="tel" required placeholder="300 000 0000"></div>
+            </div>
+            <div class="field"><label for="cReminder">¿Cuándo quiere que le recordemos la cita por correo?</label><select id="cReminder"></select></div>
+            <div class="field"><label for="cNotes">¿Algo que su barbero deba saber? (opcional)</label><textarea id="cNotes" rows="3" maxlength="500" placeholder="Ej.: quiero el degradado más bajo que la última vez"></textarea></div>
+            <div class="btn-row">
+              <button class="btn btn-primary" type="submit" id="confirmBtn">Confirmar mi turno</button>
+              <button class="btn btn-ghost" type="button" data-back>← Cambiar horario</button>
+            </div>
+            <p class="muted" style="font-size:.85rem;margin-top:14px">Al confirmar, recibirá un correo con todos los detalles. Puede reprogramar o cancelar desde su cuenta.</p>
+          </form>
+        </section>
+
+        <section data-panel="5" class="hidden">
+          <div class="card" style="border-color:var(--brass)">
+            <span class="eyebrow">¡Listo!</span>
+            <h2 id="doneTitle">Su silla le está esperando</h2>
+            <p id="doneText" class="muted"></p>
+            <div class="btn-row">
+              <a href="cuenta.html" class="btn btn-primary">Ver mis citas</a>
+              <a href="tienda.html" class="btn btn-ghost">Preparar mi kit de cuidado</a>
+              <a href="#" class="btn btn-ghost" id="calLink" target="_blank" rel="noopener">Agregar a Google Calendar</a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="card summary">
+        <h3>Su reserva</h3>
+        <dl>
+          <dt>Servicio</dt><dd id="sService">—</dd>
+          <dt>Barbero</dt><dd id="sBarber">—</dd>
+          <dt>Fecha</dt><dd id="sDate">—</dd>
+          <dt>Hora</dt><dd id="sTime">—</dd>
+          <dt>Duración</dt><dd id="sDur">—</dd>
+          <dt>Valor</dt><dd id="sPrice" style="color:var(--brass-2)">—</dd>
+        </dl>
+        <p class="muted" style="font-size:.85rem;margin:0">Paga en la barbería al terminar su servicio, cuando ya haya visto el resultado.</p>
+      </aside>
+    </div>
+  </div>
+</main>
+<script type="module" src="js/booking.js"></script>
+</body>
+</html>
